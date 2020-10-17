@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# webhook-trader local ignores
+whtrader/wth_config.py
+.idea/
