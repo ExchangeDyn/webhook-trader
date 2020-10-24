@@ -10,6 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 # Third party imports
 from flask import Flask, request, make_response  # , abort
+import ccxt
 
 # Local application imports
 import wht_core
@@ -17,6 +18,15 @@ import wth_config
 
 # Set variables from config file
 wh_key = wth_config.wh_key
+api_key = wth_config.api_key
+secret_key = wth_config.secret_key
+exchange = wth_config.exchange
+if exchange == 'binance':
+    exchange = ccxt.binance({
+        'apiKey': api_key,
+        'secret': secret_key,
+        'enableRateLimit': True
+    })
 
 # Set threading pool
 e = ThreadPoolExecutor()
@@ -58,18 +68,32 @@ def create_app(test_config=None):
     @app.route('/' + wh_key + '/webhook', methods=['POST'])
     def webhook():
         if request.method == 'POST':
-            recv_message = request.data.decode("utf-8")
-            instruction = json.loads(recv_message)
-            logger.info("POST Request received: %s", instruction)
-            symbol = instruction["symbol"]
-            side = instruction["side"]
-            price = instruction["price"]
-            quantity = instruction["quantity"]
+            msg_posted = request.data.decode("utf-8")
+            instruction = json.loads(msg_posted)
+            logger.info('POST Request received: %s', instruction)
+            symbol = instruction['symbol']
+            side = instruction['side']
+            price = instruction['price']
+            try:
+                amount_pc = instruction['amount_pc']
+            except KeyError:
+                amount_pc = 100
+            quantity = 0
+            try:
+                quantity = instruction['quantity']
+            except KeyError:
+                if side == 'BUY':
+                    balance_quote = wht_core.fetch_asset_balance(exchange, symbol.split('/')[1])
+                    quantity = wht_core.determine_quantity(side, amount_pc, balance_quote, price)
+                elif side == 'SELL':
+                    balance_base = wht_core.fetch_asset_balance(exchange, symbol.split('/')[0])
+                    quantity = wht_core.determine_quantity(side, amount_pc, balance_base, price)
             e.submit(wht_core.place_order,
-                     symbol,
-                     side,
-                     price,
-                     quantity)
+                     exchange=exchange,
+                     symbol=symbol,
+                     side=side,
+                     price=price,
+                     quantity=quantity)
             return 'POST OK', 200
 
     return app

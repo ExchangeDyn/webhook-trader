@@ -4,23 +4,6 @@
 import logging
 logger = logging.getLogger(__name__)
 
-# Third party imports
-import ccxt
-
-# Local application imports
-import wth_config
-
-# Set variables from config file
-api_key = wth_config.api_key
-secret_key = wth_config.secret_key
-exchange = wth_config.exchange
-if exchange == 'binance':
-    exchange = ccxt.binance({
-        'apiKey': api_key,
-        'secret': secret_key,
-        'enableRateLimit': True
-    })
-
 
 def wh_index():
     redirect = '<head><meta http-equiv="refresh" content="0; URL=\'https://www.google.com\'" /></head>'
@@ -32,9 +15,23 @@ def fetch_asset_balance(exchange, asset):
     return balances['free'][asset]
 
 
-def place_order(symbol, side, price, quantity):
+def determine_quantity(side, amount_pc, balance, price):
+    amount_pc = float(amount_pc)
+    balance = float(balance)
+    price = float(price)
+    quantity = 0
     if side == 'BUY':
+        quantity = amount_pc / 100 * balance / price
+    if side == 'SELL':
+        quantity = amount_pc / 100 * balance
+    return quantity
+
+
+def place_order(exchange, symbol, side, price, quantity):
+    if side == 'BUY':
+        print('LIMIT ORDER', symbol, side, price, quantity)
         order = exchange.create_limit_buy_order(symbol, quantity, price)
-    else:
+    elif side == 'SELL':
+        print('LIMIT ORDER', symbol, side, price, quantity)
         order = exchange.create_limit_sell_order(symbol, quantity, price)
     return order
