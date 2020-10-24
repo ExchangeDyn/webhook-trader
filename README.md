@@ -2,15 +2,13 @@
 Webhook crypto trader. Intended to be used along with TradingView and a crypto exchange.
 
 ## Current state of the project
-It receives a webhook and places a Take Profit Order or a Stop Limit Order on Binance.
+It receives a webhook and places a Limit Order on Binance.
 
 You can post it a `BUY` or `SELL` to the webhook like this. Example:
 ```json
 {
-  "symbol": "BTCUSDT",
+  "symbol": "BTC/USDT",
   "side": "BUY",
-  "time_in_force": "GTC",
-  "trigger_price": "11200",
   "price": "11220",
   "quantity": 0.002
 }
@@ -24,4 +22,4 @@ You can post it a `BUY` or `SELL` to the webhook like this. Example:
 5. Duplicate file `wth_config-sample.py` into `wth_config.py`editing it with your custom values.
 6. \#TODO: Write Flask instructions here.
 
-Developed using `Flask` and `python-binance`.
+Developed using `Flask` and `ccxt`.

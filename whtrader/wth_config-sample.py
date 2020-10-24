@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 # WHTrader specifics
-wh_key = ""
+wh_key = ''
 
-# Binance account API Key
-binance_api_key = ""
-binance_secret_key = ""
+# API Keys
+exchange = 'binance' # binance, bitfinex, kraken, etc.
+api_key = ''
+secret_key = ''

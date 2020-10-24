@@ -2,7 +2,7 @@
 
 # Standard library imports
 import logging.config
-logging.config.fileConfig("logging.conf", disable_existing_loggers=False)
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
 logger = logging.getLogger(__name__)
 import json
 import os
@@ -63,15 +63,11 @@ def create_app(test_config=None):
             logger.info("POST Request received: %s", instruction)
             symbol = instruction["symbol"]
             side = instruction["side"]
-            time_in_force = instruction["time_in_force"]
-            trigger_price = instruction["trigger_price"]
             price = instruction["price"]
             quantity = instruction["quantity"]
-            e.submit(wht_core.create_order,
+            e.submit(wht_core.place_order,
                      symbol,
                      side,
-                     time_in_force,
-                     trigger_price,
                      price,
                      quantity)
             return 'POST OK', 200
