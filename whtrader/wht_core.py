@@ -2,6 +2,7 @@
 
 # Standard library imports
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -12,7 +13,7 @@ def wh_index():
 
 def fetch_asset_balance(exchange, asset):
     balances = exchange.fetch_balance()
-    return balances['free'][asset]
+    return balances["free"][asset]
 
 
 def determine_quantity(side, amount_pc, balance, price):
@@ -20,18 +21,18 @@ def determine_quantity(side, amount_pc, balance, price):
     balance = float(balance)
     price = float(price)
     quantity = 0
-    if side == 'BUY':
+    if side == "BUY":
         quantity = amount_pc / 100 * balance / price
-    if side == 'SELL':
+    if side == "SELL":
         quantity = amount_pc / 100 * balance
     return quantity
 
 
 def place_order(exchange, symbol, side, price, quantity):
-    if side == 'BUY':
-        print('LIMIT ORDER', symbol, side, price, quantity)
+    if side == "BUY":
+        print("LIMIT ORDER", symbol, side, price, quantity)
         order = exchange.create_limit_buy_order(symbol, quantity, price)
-    elif side == 'SELL':
-        print('LIMIT ORDER', symbol, side, price, quantity)
+    elif side == "SELL":
+        print("LIMIT ORDER", symbol, side, price, quantity)
         order = exchange.create_limit_sell_order(symbol, quantity, price)
     return order
