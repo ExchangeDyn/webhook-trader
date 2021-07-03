@@ -33,7 +33,7 @@ Please note the following:
 2. Create a virtual environment (e.g. `$ python -m venv venv`).
 3. Activate the virtual environment (e.g. `$ source venv/bin/activate`).
 4. Install package requirements (e.g. `(venv) $ pip install -r requirements.txt`).
-5. Duplicate file `wth_config-sample.py` into `wth_config.py`editing it with your custom values.
+5. Duplicate file `wht_config-sample.py` into `wht_config.py`editing it with your custom values.
 6. \#TODO: Write Flask instructions here.
 
 Developed using `Flask` and `ccxt`.
