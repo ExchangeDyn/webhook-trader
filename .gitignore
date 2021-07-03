@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # webhook-trader local ignores
-whtrader/wth_config.py
+whtrader/wht_config.py
 .idea/
