@@ -15,13 +15,13 @@ import ccxt
 
 # Local application imports
 import wht_core
-import wth_config
+import wht_config
 
 # Set variables from config file
-wh_key = wth_config.wh_key
-api_key = wth_config.api_key
-secret_key = wth_config.secret_key
-exchange = wth_config.exchange
+wh_key = wht_config.wh_key
+api_key = wht_config.api_key
+secret_key = wht_config.secret_key
+exchange = wht_config.exchange
 if exchange == "binance":
     exchange = ccxt.binance(
         {"apiKey": api_key, "secret": secret_key, "enableRateLimit": True}
