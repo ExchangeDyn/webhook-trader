@@ -22,10 +22,10 @@ wh_key = wht_config.wh_key
 exchanges = wht_config.exchanges
 instances = {}
 
-for exchange in exchanges:
-    exchange_id = exchange["id"]
-    exchange_type = exchange["type"]
-    exchange_params = exchange["params"]
+for i in exchanges:
+    exchange_id = i["id"]
+    exchange_type = i["type"]
+    exchange_params = i["params"]
     exchange_class = getattr(ccxt, exchange_type)
     instances[exchange_id] = exchange_class(exchange_params)
 
@@ -55,6 +55,8 @@ def create_app():
             msg_posted = request.data.decode("utf-8")
             instruction = json.loads(msg_posted)
             logger.info("POST Request received: %s", instruction)
+            instance_ref = instruction["exchange_id"]
+            exchange = instances[instance_ref]
             symbol = instruction["symbol"]
             side = instruction["side"]
             price = instruction["price"]
