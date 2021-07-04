@@ -17,40 +17,31 @@ import ccxt
 import wht_core
 import wht_config
 
-# Set variables from config file
-wh_key = wht_config.wh_key
-api_key = wht_config.api_key
-secret_key = wht_config.secret_key
-exchange = wht_config.exchange
-if exchange == "binance":
-    exchange = ccxt.binance(
-        {"apiKey": api_key, "secret": secret_key, "enableRateLimit": True}
+# Create exchange instances from config file
+exchanges = wht_config.exchanges
+instances = {}
+
+for exchange in exchanges:
+    exchange_id = exchange["id"]
+    exchange_type = exchange["type"]
+    exchange_apiKey = exchange["apiKey"]
+    exchange_secret = exchange["secret"]
+    exchange_class = getattr(ccxt, exchange_type)
+    instances[exchange_id] = exchange_class(
+        {
+            "apiKey": exchange_apiKey,
+            "secret": exchange_secret,
+        }
     )
+
 
 # Set threading pool
 e = ThreadPoolExecutor()
 
 
-def create_app(test_config=None):
+def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_mapping(
-        SECRET_KEY="dev",
-        DATABASE=os.path.join(app.instance_path, "idb.sqlite"),
-    )
-
-    if test_config is None:
-        # load the instance config, if it exists, when not testing
-        app.config.from_pyfile("config.py", silent=True)
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
-
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
 
     # main route
     @app.route("/")

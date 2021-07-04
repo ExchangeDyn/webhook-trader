@@ -4,6 +4,17 @@
 wh_key = ""
 
 # API Keys
-exchange = "binance"  # binance, bitfinex, kraken, etc.
-api_key = ""
-secret_key = ""
+exchanges = [
+    {
+        "id": "wht-binance",  # Used for identifying this instance, this can be anything
+        "type": "binance",  # Type of exchange in CCXT
+        "apiKey": "",
+        "secret": "",
+    },
+    {
+        "id": "wht-bitfinex",  # Used for identifying this instance, this can be anything
+        "type": "bitfinex",  # Type of exchange in CCXT
+        "apiKey": "",
+        "secret": "",
+    },
+]
