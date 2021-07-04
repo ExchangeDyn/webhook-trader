@@ -8,13 +8,17 @@ exchanges = [
     {
         "id": "wht-binance",  # Used for identifying this instance, this can be anything
         "type": "binance",  # Type of exchange in CCXT
-        "apiKey": "",
-        "secret": "",
+        "params": {
+            "apiKey": "",
+            "secret": "",
+        },
     },
     {
-        "id": "wht-bitfinex",  # Used for identifying this instance, this can be anything
-        "type": "bitfinex",  # Type of exchange in CCXT
-        "apiKey": "",
-        "secret": "",
+        "id": "wht-binance",  # Used for identifying this instance, this can be anything
+        "type": "binance",  # Type of exchange in CCXT
+        "params": {
+            "apiKey": "",
+            "secret": "",
+        },
     },
 ]

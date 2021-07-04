@@ -17,23 +17,17 @@ import ccxt
 import wht_core
 import wht_config
 
-# Create exchange instances from config file
+# Create exchange instances from config file and grab other settings
+wh_key = wht_config.wh_key
 exchanges = wht_config.exchanges
 instances = {}
 
 for exchange in exchanges:
     exchange_id = exchange["id"]
     exchange_type = exchange["type"]
-    exchange_apiKey = exchange["apiKey"]
-    exchange_secret = exchange["secret"]
+    exchange_params = exchange["params"]
     exchange_class = getattr(ccxt, exchange_type)
-    instances[exchange_id] = exchange_class(
-        {
-            "apiKey": exchange_apiKey,
-            "secret": exchange_secret,
-        }
-    )
-
+    instances[exchange_id] = exchange_class(exchange_params)
 
 # Set threading pool
 e = ThreadPoolExecutor()
