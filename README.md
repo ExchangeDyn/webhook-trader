@@ -9,6 +9,7 @@ You can post it a `BUY` or `SELL` to the webhook like this. Example:
 {
   "exchange_id": "XXXXXXXXXX",
   "symbol": "BTC/USDT",
+  "order_type": "limit",
   "side": "BUY",
   "price": "11220",
   "quantity": 0.002
@@ -19,6 +20,7 @@ If you don't set `quantity`, you might want to set `amount_pc` which is a calcul
 {
   "exchange_id": "XXXXXXXXXX",
   "symbol": "BTC/USDT",
+  "order_type": "limit",
   "side": "BUY",
   "price": "11220",
   "amount_pc": 80

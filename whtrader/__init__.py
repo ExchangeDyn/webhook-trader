@@ -58,6 +58,7 @@ def create_app():
             instance_ref = instruction["exchange_id"]
             exchange = instances[instance_ref]
             symbol = instruction["symbol"]
+            order_type = instruction["order_type"]
             side = instruction["side"]
             price = instruction["price"]
             try:
@@ -68,27 +69,33 @@ def create_app():
             try:
                 quantity = instruction["quantity"]
             except KeyError:
-                if side == "BUY":
+                if side == "BUY".lower():
                     balance_quote = wht_core.fetch_asset_balance(
-                        exchange, symbol.split("/")[1]
+                        exchange, symbol.split("/")[1].upper()
                     )
                     quantity = wht_core.determine_quantity(
                         side, amount_pc, balance_quote, price
                     )
-                elif side == "SELL":
+                elif side == "SELL".lower():
                     balance_base = wht_core.fetch_asset_balance(
-                        exchange, symbol.split("/")[0]
+                        exchange, symbol.split("/")[0].upper()
                     )
                     quantity = wht_core.determine_quantity(
                         side, amount_pc, balance_base, price
                     )
+            try:
+                stop_price = instruction["stop_price"]
+            except KeyError:
+                stop_price = price
             e.submit(
                 wht_core.place_order,
                 exchange=exchange,
                 symbol=symbol,
+                order_type=order_type,
                 side=side,
-                price=price,
                 quantity=quantity,
+                price=price,
+                stop_price=stop_price,
             )
             return "POST OK", 200
 
