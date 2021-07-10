@@ -57,10 +57,17 @@ def create_app():
             logger.info("POST Request received: %s", instruction)
             instance_ref = instruction["exchange_id"]
             exchange = instances[instance_ref]
-            symbol = instruction["symbol"]
-            order_type = instruction["order_type"]
-            side = instruction["side"]
-            price = instruction["price"]
+            symbol = instruction["symbol"].upper()
+            order_type = instruction["order_type"].lower()
+            side = instruction["side"].lower()
+            try:
+                price = instruction["price"]
+            except KeyError:
+                price = exchange.fetchTicker(symbol)["close"]
+            try:
+                stop_price = instruction["stop_price"]
+            except KeyError:
+                stop_price = price
             try:
                 amount_pc = instruction["amount_pc"]
             except KeyError:
@@ -69,24 +76,22 @@ def create_app():
             try:
                 quantity = instruction["quantity"]
             except KeyError:
-                if side == "BUY".lower():
+                if side == "buy":
                     balance_quote = wht_core.fetch_asset_balance(
                         exchange, symbol.split("/")[1].upper()
                     )
                     quantity = wht_core.determine_quantity(
                         side, amount_pc, balance_quote, price
                     )
-                elif side == "SELL".lower():
+                elif side == "sell":
                     balance_base = wht_core.fetch_asset_balance(
                         exchange, symbol.split("/")[0].upper()
                     )
                     quantity = wht_core.determine_quantity(
                         side, amount_pc, balance_base, price
                     )
-            try:
-                stop_price = instruction["stop_price"]
-            except KeyError:
-                stop_price = price
+
+            # Submit order for execution
             e.submit(
                 wht_core.place_order,
                 exchange=exchange,

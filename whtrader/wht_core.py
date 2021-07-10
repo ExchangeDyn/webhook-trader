@@ -21,22 +21,31 @@ def determine_quantity(side, amount_pc, balance, price):
     balance = float(balance)
     price = float(price)
     quantity = 0
-    if side == "BUY".lower():
+    if side == "buy":
         quantity = amount_pc / 100 * balance / price
-    if side == "SELL".lower():
+    if side == "sell":
         quantity = amount_pc / 100 * balance
     return quantity
 
 
-def place_order(exchange, symbol, order_type, side, quantity, price, stop_price):
+def place_order(
+    exchange, symbol, order_type, side, quantity, price=None, stop_price=None
+):
     exchange = exchange
-    exchange_id = exchange.id
+    # exchange_id = exchange.id
     symbol = symbol.upper()
     order_type = order_type.lower()
     side = side.lower()
     amount = quantity
-    price = float(price)
-    stop_price = float(stop_price)
+    try:
+        price = float(price)
+    except TypeError:
+        price = None
+    try:
+        stop_price = float(stop_price)
+    except TypeError:
+        stop_price = None
+    ref_price = None
     order = None
 
     possible_orders = [
@@ -52,10 +61,27 @@ def place_order(exchange, symbol, order_type, side, quantity, price, stop_price)
                 "type": "stopLimit",
             }
 
-            # TODO: Define the logic for BUY and for SELL sides with STOP_LOSS_LIMIT and TAKE_PROFIT_LIMIT (Binance)
-            order = exchange.create_order(
-                symbol, "STOP_LOSS_LIMIT", side, amount, price, params
-            )
+            ref_price = exchange.fetchTicker(symbol)["close"]
+
+            if side == "buy" and ref_price >= stop_price:
+                order = exchange.create_order(
+                    symbol, "TAKE_PROFIT_LIMIT", side, amount, price, params
+                )
+            elif side == "buy" and ref_price < stop_price:
+                order = exchange.create_order(
+                    symbol, "STOP_LOSS_LIMIT", side, amount, price, params
+                )
+            elif side == "sell" and ref_price >= stop_price:
+                order = exchange.create_order(
+                    symbol, "STOP_LOSS_LIMIT", side, amount, price, params
+                )
+            elif side == "sell" and ref_price < stop_price:
+                order = exchange.create_order(
+                    symbol, "TAKE_PROFIT_LIMIT", side, amount, price, params
+                )
+
+        elif order_type == "market":
+            order = exchange.create_order(symbol, order_type, side, amount)
         else:
             order = exchange.create_order(symbol, order_type, side, amount, price)
 
@@ -67,6 +93,7 @@ def place_order(exchange, symbol, order_type, side, quantity, price, stop_price)
             amount,
             price,
             stop_price,
+            ref_price,
         )
 
     return order
